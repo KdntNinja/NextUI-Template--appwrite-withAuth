@@ -5,9 +5,8 @@ import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { useRouter } from "next/navigation";
 
-import { account } from "../appwrite";
+import { account, ID } from "../appwrite";
 
 import { siteConfig } from "@/config/site";
 
@@ -15,10 +14,12 @@ const initialValues: {
 	email: string;
 	password: string;
 	confirmPassword: string;
+	name: string;
 } = {
 	email: "",
 	password: "",
 	confirmPassword: "",
+	name: "",
 };
 
 const SignupSchema = Yup.object().shape({
@@ -27,20 +28,19 @@ const SignupSchema = Yup.object().shape({
 	confirmPassword: Yup.string()
 		.oneOf([Yup.ref("password"), undefined], "Passwords must match")
 		.required("Required"),
+	name: Yup.string().required("Required"),
 });
 
 const SignupPage = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const router = useRouter();
 
-	const signup = async (email: string, password: string) => {
+	const signup = async (email: string, password: string, name: string) => {
 		setLoading(true);
 		setError(null);
 		try {
-			await account.create("unique()", email, password);
-			await account.createEmailPasswordSession(email, password);
-			router.push(siteConfig.routes.dashboard);
+			await account.create(ID.unique(), email, password, name);
+			await login(email, password);
 		} catch (err) {
 			setError("Signup failed. Please try again.");
 		} finally {
@@ -48,17 +48,28 @@ const SignupPage = () => {
 		}
 	};
 
+	const login = async (email: string, password: string) => {
+		await account.createEmailPasswordSession(email, password);
+		await account.get();
+	};
+
 	const handleSubmit = async (
-		values: { email: string; password: string; confirmPassword: string },
+		values: {
+			email: string;
+			password: string;
+			confirmPassword: string;
+			name: string;
+		},
 		{
 			setSubmitting,
 		}: FormikHelpers<{
 			email: string;
 			password: string;
 			confirmPassword: string;
+			name: string;
 		}>,
 	) => {
-		await signup(values.email, values.password);
+		await signup(values.email, values.password, values.name);
 		setSubmitting(false);
 	};
 
@@ -99,6 +110,15 @@ const SignupPage = () => {
 							value={values.confirmPassword}
 							variant="bordered"
 							onChange={handleChange("confirmPassword")}
+						/>
+						<Input
+							errorMessage={errors.name}
+							isInvalid={!!errors.name && touched.name}
+							label="Name"
+							type="text"
+							value={values.name}
+							variant="bordered"
+							onChange={handleChange("name")}
 						/>
 						{error && <div className="text-red-500 text-sm">{error}</div>}
 						<Button
