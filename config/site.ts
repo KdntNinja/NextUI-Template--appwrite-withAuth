@@ -3,7 +3,7 @@ const routes = {
 	about: "/about",
 	login: "/login",
 	signup: "/signup",
-	continueWithGithub: "/login/github",
+	dashboard: "/dash",
 };
 
 export const siteConfig = {

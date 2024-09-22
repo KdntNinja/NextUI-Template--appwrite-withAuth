@@ -1,12 +1,15 @@
+"use client";
+
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Link } from "@nextui-org/link";
 import { button as buttonStyles } from "@nextui-org/theme";
+import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
-import { GithubIcon } from "@/components/icons";
 
 export default function Home() {
+	const router = useRouter();
+
 	return (
 		<section
 			aria-labelledby="homepage-title"
@@ -24,8 +27,7 @@ export default function Home() {
 			</div>
 
 			<div className="flex gap-4 mt-6">
-				<Link
-					isExternal
+				<button
 					aria-label="Get Started"
 					className={buttonStyles({
 						color: "primary",
@@ -33,24 +35,22 @@ export default function Home() {
 						variant: "shadow",
 						class: "transition-transform hover:scale-105",
 					})}
-					href={siteConfig.routes.login}
+					onClick={() => router.push(siteConfig.routes.login)}
 				>
 					Get Started
-				</Link>
-				<Link
-					isExternal
-					aria-label="Continue with GitHub"
+				</button>
+				<button
+					aria-label="Learn More"
 					className={buttonStyles({
 						variant: "bordered",
 						radius: "full",
 						class:
 							"flex items-center gap-2 transition-transform hover:scale-105",
 					})}
-					href={siteConfig.routes.continueWithGithub}
+					onClick={() => router.push(siteConfig.routes.about)}
 				>
-					<GithubIcon size={20} />
-					<span>Continue with GitHub</span>
-				</Link>
+					<span>Learn More</span>
+				</button>
 			</div>
 
 			<div className="mt-12">

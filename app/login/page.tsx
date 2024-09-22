@@ -5,6 +5,7 @@ import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
+import { useRouter } from "next/navigation";
 
 import { account } from "../appwrite";
 
@@ -23,6 +24,7 @@ const LoginSchema = Yup.object().shape({
 const LoginPage = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const router = useRouter();
 
 	const login = async (email: string, password: string) => {
 		setLoading(true);
@@ -30,6 +32,7 @@ const LoginPage = () => {
 		try {
 			await account.createEmailPasswordSession(email, password);
 			await account.get();
+			router.push(siteConfig.routes.dashboard);
 		} catch (err) {
 			setError("Login failed. Please check your credentials.");
 		} finally {
