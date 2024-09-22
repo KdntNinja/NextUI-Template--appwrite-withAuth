@@ -1,8 +1,9 @@
 const routes = {
 	home: "/",
 	about: "/about",
-	auth: "/auth",
-	continueWithGithub: "/auth/github",
+	login: "/login",
+	signup: "/signup",
+	continueWithGithub: "/login/github"
 };
 
 export const siteConfig = {
@@ -44,5 +45,15 @@ export const siteConfig = {
 			description:
 				"Keep your projects safe with advanced security features and regular backups.",
 		},
+		{
+			label: "Seamless Integration",
+			description:
+				"Integrate effortlessly with your favorite tools and services for a streamlined workflow."
+		},
+		{
+			label: "Customizable Workflows",
+			description:
+				"Tailor your project management experience with flexible and customizable workflows."
+		}
 	],
 };
