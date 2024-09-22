@@ -43,6 +43,8 @@ export default function RootLayout({
 					fontSans.variable,
 				)}
 			>
+				<SpeedInsights />
+				<Analytics />
 				<Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
 					<div className="relative flex flex-col h-screen">
 						<Navbar />

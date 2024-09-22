@@ -61,8 +61,7 @@ export default function Home() {
 							key={index}
 							className="shadow-lg transition-transform transform hover:scale-105 hover:rotate-1 hover:shadow-2xl rounded-lg w-full"
 						>
-							<CardHeader
-								className="font-bold text-lg bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white p-4 rounded-t-lg">
+							<CardHeader className="font-bold text-lg bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white p-4 rounded-t-lg">
 								{feature.label}
 							</CardHeader>
 							<CardBody className="p-4">
