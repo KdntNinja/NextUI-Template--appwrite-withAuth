@@ -1,59 +1,48 @@
-export type SiteConfig = typeof siteConfig;
+const routes = {
+	home: "/",
+	about: "/about",
+	auth: "/auth",
+	continueWithGithub: "/auth/github",
+};
 
 export const siteConfig = {
-	name: "Github-Clone",
-	title: "The new Git project management site.",
-	description: "Beautiful, fast and modern.",
-	page: {
-		signup: "/signup",
-		continueWithGithub: "/continue-with-github",
-	},
+	name: "Versionary",
+	title_p1: "The new",
+	title_p2: "Git project",
+	title_p3: "management site.",
+	description:
+		"Beautiful, fast, and modern. Everything you need for managing your projects in one place.",
+	routes,
 	navItems: [
 		{
 			label: "Home",
-			href: "/",
-		},
-		{
-			label: "Docs",
-			href: "/docs",
+			href: routes.home,
 		},
 		{
 			label: "About",
-			href: "/about",
+			href: routes.about,
 		},
 	],
-	navMenuItems: [
+	features: [
 		{
-			label: "Profile",
-			href: "/profile",
+			label: "Blazing Fast Performance",
+			description:
+				"Experience lightning-fast load times and responsiveness for seamless navigation.",
 		},
 		{
-			label: "Dashboard",
-			href: "/dashboard",
+			label: "Sleek Modern Design",
+			description:
+				"Enjoy a visually stunning interface that enhances user experience and engagement.",
 		},
 		{
-			label: "Projects",
-			href: "/projects",
+			label: "Intuitive Project Management",
+			description:
+				"Easily organize, track, and collaborate on projects with user-friendly tools.",
 		},
 		{
-			label: "Team",
-			href: "/team",
-		},
-		{
-			label: "Calendar",
-			href: "/calendar",
-		},
-		{
-			label: "Settings",
-			href: "/settings",
-		},
-		{
-			label: "Help & Feedback",
-			href: "/help-feedback",
-		},
-		{
-			label: "Logout",
-			href: "/logout",
+			label: "Robust Security",
+			description:
+				"Keep your projects safe with advanced security features and regular backups.",
 		},
 	],
 };

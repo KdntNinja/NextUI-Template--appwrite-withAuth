@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+
 import { account, ID } from "../appwrite";
 
 interface User {
@@ -21,6 +22,8 @@ const LoginPage = () => {
 		setError(null);
 		try {
 			const session = await account.createEmailPasswordSession(email, password);
+
+			// @ts-ignore
 			setLoggedInUser(await account.get());
 		} catch (err) {
 			setError("Login failed. Please check your credentials.");
@@ -56,7 +59,7 @@ const LoginPage = () => {
 		return (
 			<div>
 				<p>Logged in as {loggedInUser.name}</p>
-				<button type="button" onClick={logout} disabled={loading}>
+				<button disabled={loading} type="button" onClick={logout}>
 					Logout
 				</button>
 			</div>
@@ -69,34 +72,34 @@ const LoginPage = () => {
 			{error && <p style={{ color: "red" }}>{error}</p>}
 			<form>
 				<input
+					required
 					placeholder="Email"
 					type="email"
 					value={email}
 					onChange={(e) => setEmail(e.target.value)}
-					required
 				/>
 				<input
+					required
 					placeholder="Password"
 					type="password"
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
-					required
 				/>
 				<input
+					required
 					placeholder="Name"
 					type="text"
 					value={name}
 					onChange={(e) => setName(e.target.value)}
-					required
 				/>
 				<button
+					disabled={loading}
 					type="button"
 					onClick={() => login(email, password)}
-					disabled={loading}
 				>
 					{loading ? "Logging in..." : "Login"}
 				</button>
-				<button type="button" onClick={register} disabled={loading}>
+				<button disabled={loading} type="button" onClick={register}>
 					{loading ? "Registering..." : "Register"}
 				</button>
 			</form>
