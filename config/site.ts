@@ -3,7 +3,7 @@ const routes = {
 	about: "/about",
 	login: "/login",
 	signup: "/signup",
-	dashboard: "/dash",
+	dashboard: "/dashboard",
 };
 
 export const siteConfig = {

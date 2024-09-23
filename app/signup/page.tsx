@@ -1,76 +1,65 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@nextui-org/input";
-import { Formik, FormikHelpers } from "formik";
-import * as Yup from "yup";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-
-import { account, ID } from "../appwrite";
-
+import { ID } from "appwrite";
+import { Formik, FormikHelpers } from "formik";
+import * as Yup from "yup";
+import { useRouter } from "next/navigation";
+import { account } from "../appwrite";
 import { siteConfig } from "@/config/site";
 
-const initialValues: {
-	email: string;
-	password: string;
-	confirmPassword: string;
-	name: string;
-} = {
+const initialValues = {
+	name: "",
 	email: "",
 	password: "",
 	confirmPassword: "",
-	name: "",
 };
 
 const SignupSchema = Yup.object().shape({
+	name: Yup.string().required("Required"),
 	email: Yup.string().email("Invalid email").required("Required"),
 	password: Yup.string().required("Required"),
 	confirmPassword: Yup.string()
-		.oneOf([Yup.ref("password"), undefined], "Passwords must match")
+		.oneOf([Yup.ref("password")], "Passwords must match")
 		.required("Required"),
-	name: Yup.string().required("Required"),
 });
 
 const SignupPage = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const router = useRouter();
 
-	const signup = async (email: string, password: string, name: string) => {
+	const handleRegistration = async (
+		values: typeof initialValues,
+		{ setSubmitting }: FormikHelpers<typeof initialValues>,
+	) => {
 		setLoading(true);
 		setError(null);
+
 		try {
-			await account.create(ID.unique(), email, password, name);
-			await login(email, password);
-		} catch (err) {
+			const response = await account.create(
+				ID.unique(),
+				values.email,
+				values.password,
+				values.name,
+			);
+			console.log("Registration successful:", response);
+			await login(values.email, values.password);
+			router.push(siteConfig.routes.dashboard);
+		} catch (error) {
+			console.error("Registration failed:", error);
 			setError("Signup failed. Please try again.");
 		} finally {
 			setLoading(false);
+			setSubmitting(false);
 		}
 	};
 
 	const login = async (email: string, password: string) => {
 		await account.createEmailPasswordSession(email, password);
 		await account.get();
-	};
-
-	const handleSubmit = async (
-		values: {
-			email: string;
-			password: string;
-			confirmPassword: string;
-			name: string;
-		},
-		{
-			setSubmitting,
-		}: FormikHelpers<{
-			email: string;
-			password: string;
-			confirmPassword: string;
-			name: string;
-		}>,
-	) => {
-		await signup(values.email, values.password, values.name);
-		setSubmitting(false);
 	};
 
 	return (
@@ -80,10 +69,22 @@ const SignupPage = () => {
 			<Formik
 				initialValues={initialValues}
 				validationSchema={SignupSchema}
-				onSubmit={handleSubmit}
+				onSubmit={handleRegistration}
 			>
-				{({ values, errors, touched, handleChange }) => (
-					<form className="flex flex-col w-1/2 gap-4 mb-4">
+				{({ values, errors, touched, handleChange, handleSubmit }) => (
+					<form
+						onSubmit={handleSubmit}
+						className="flex flex-col w-1/2 gap-4 mb-4"
+					>
+						<Input
+							errorMessage={errors.name}
+							isInvalid={!!errors.name && touched.name}
+							label="Name"
+							type="text"
+							value={values.name}
+							variant="bordered"
+							onChange={handleChange("name")}
+						/>
 						<Input
 							errorMessage={errors.email}
 							isInvalid={!!errors.email && touched.email}
@@ -110,15 +111,6 @@ const SignupPage = () => {
 							value={values.confirmPassword}
 							variant="bordered"
 							onChange={handleChange("confirmPassword")}
-						/>
-						<Input
-							errorMessage={errors.name}
-							isInvalid={!!errors.name && touched.name}
-							label="Name"
-							type="text"
-							value={values.name}
-							variant="bordered"
-							onChange={handleChange("name")}
 						/>
 						{error && <div className="text-red-500 text-sm">{error}</div>}
 						<Button
