@@ -10,9 +10,7 @@ import { useRouter } from "next/navigation";
 import { account, ID } from "../appwrite";
 import { Models } from "appwrite";
 
-import { siteConfig } from "@/config/site";
-
-interface FormValues {
+import { siteConfig } from "@/configinterface FormValues {
     email: string;
     password: string;
     confirmPassword?: string;
@@ -39,6 +37,7 @@ const SignupPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [loggedInUser, setLoggedInUser] = useState<Models.User<Models.Preferences> | null>(null);
+    const [isSignup, setIsSignup] = useState(true);
     const router = useRouter();
 
     const signup = async (email: string, password: string, name: string) => {
@@ -78,18 +77,13 @@ const SignupPage = () => {
         values: FormValues,
         { setSubmitting }: FormikHelpers<FormValues>
     ) => {
-        if (values.name && values.confirmPassword) {
+        if (isSignup && values.name && values.confirmPassword) {
             await signup(values.email, values.password, values.name);
         } else {
             await login(values.email, values.password);
         }
         setSubmitting(false);
-    };
-
-    if (loggedInUser) {
-        return (
-            <div>
-                <p>Logged in as {loggedInUser.name}</p>
+    as {loggedInUser.name}</p>
                 <button type="button" onClick={logout}>
                     Logout
                 </button>
@@ -99,7 +93,7 @@ const SignupPage = () => {
 
     return (
         <div className="flex flex-col items-center">
-            <h1 className="text-center text-[25px] font-bold mb-6">Sign Up</h1>
+            <h1 className="text-center text-[25px] font-bold mb-6">{isSignup ? "Sign Up" : "Login"}</h1>
 
             <Formik
                 initialValues={initialValues}
@@ -126,27 +120,27 @@ const SignupPage = () => {
                             variant="bordered"
                             onChange={handleChange("password")}
                         />
-                        {values.name !== undefined && (
-                            <Input
-                                errorMessage={errors.name}
-                                isInvalid={!!errors.name && touched.name}
-                                label="Name"
-                                type="text"
-                                value={values.name}
-                                variant="bordered"
-                                onChange={handleChange("name")}
-                            />
-                        )}
-                        {values.confirmPassword !== undefined && (
-                            <Input
-                                errorMessage={errors.confirmPassword}
-                                isInvalid={!!errors.confirmPassword && touched.confirmPassword}
-                                label="Confirm Password"
-                                type="password"
-                                value={values.confirmPassword}
-                                variant="bordered"
-                                onChange={handleChange("confirmPassword")}
-                            />
+                        {isSignup && (
+                            <>
+                                <Input
+                                    errorMessage={errors.name}
+                                    isInvalid={!!errors.name && touched.name}
+                                    label="Name"
+                                    type="text"
+                                    value={values.name}
+                                    variant="bordered"
+                                    onChange={handleChange("name")}
+                                />
+                                <Input
+                                    errorMessage={errors.confirmPassword}
+                                    isInvalid={!!errors.confirmPassword && touched.confirmPassword}
+                                    label="Confirm Password"
+                                    type="password"
+                                    value={values.confirmPassword}
+                                    variant="bordered"
+                                    onChange={handleChange("confirmPassword")}
+                                />
+                            </>
                         )}
                         {error && <div className="text-red-500 text-sm">{error}</div>}
                         <Button
@@ -155,24 +149,24 @@ const SignupPage = () => {
                             type="submit"
                             variant="flat"
                         >
-                            {values.name ? "Sign Up" : "Login"}
+                            {isSignup ? "Sign Up" : "Login"}
                         </Button>
                     </form>
                 )}
             </Formik>
 
             <div className="font-light text-slate-400 mt-4 text-sm">
-                {values.name ? (
+                {isSignup ? (
                     <>
                         Already have an account?{" "}
-                        <Link className="font-bold" href={siteConfig.routes.login}>
+                        <Link className="font-bold" href="#" onClick={() => setIsSignup(false)}>
                             Login here
                         </Link>
                     </>
                 ) : (
                     <>
                         Don&apos;t have an account?{" "}
-                        <Link className="font-bold" href={siteConfig.routes.signup}>
+                        <Link className="font-bold" href="#" onClick={() => setIsSignup(true)}>
                             Register here
                         </Link>
                     </>
