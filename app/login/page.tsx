@@ -104,6 +104,15 @@ const LoginPage = () => {
                 {({ values, errors, touched, handleChange }) => (
                     <form className="flex flex-col w-1/2 gap-4 mb-4">
                         <Input
+                            errorMessage={errors.name}
+                            isInvalid={!!errors.name && touched.name}
+                            label="Name"
+                            type="text"
+                            value={values.name}
+                            variant="bordered"
+                            onChange={handleChange("name")}
+                        />
+                        <Input
                             errorMessage={errors.email}
                             isInvalid={!!errors.email && touched.email}
                             label="Email"
@@ -120,15 +129,6 @@ const LoginPage = () => {
                             value={values.password}
                             variant="bordered"
                             onChange={handleChange("password")}
-                        />
-                        <Input
-                            errorMessage={errors.name}
-                            isInvalid={!!errors.name && touched.name}
-                            label="Name"
-                            type="text"
-                            value={values.name}
-                            variant="bordered"
-                            onChange={handleChange("name")}
                         />
                         {error && <div className="text-red-500 text-sm">{error}</div>}
                         <Button
