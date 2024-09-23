@@ -7,11 +7,18 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 
-import { account, ID, Models } from "../appwrite";
+import { account, ID } from "../appwrite";
+import { Models } from "appwrite";
 
 import { siteConfig } from "@/config/site";
 
-const initialValues: { email: string; password: string; name?: string } = {
+interface FormValues {
+    email: string;
+    password: string;
+    name?: string;
+}
+
+const initialValues: FormValues = {
     email: "",
     password: "",
     name: "",
@@ -63,8 +70,8 @@ const LoginPage = () => {
     };
 
     const handleSubmit = async (
-        values: { email: string; password: string; name?: string },
-        { setSubmitting }: FormikHelpers<{ email: string; password: string; name?: string }>
+        values: FormValues,
+        { setSubmitting }: FormikHelpers<FormValues>
     ) => {
         if (values.name) {
             await register(values.email, values.password, values.name);
