@@ -7,7 +7,7 @@ import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
 
-import { account, ID } from "../appwrite";
+import { account, ID, Models } from "../appwrite";
 
 import { siteConfig } from "@/config/site";
 
@@ -26,7 +26,7 @@ const LoginSchema = Yup.object().shape({
 const LoginPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loggedInUser, setLoggedInUser] = useState(null);
+    const [loggedInUser, setLoggedInUser] = useState<Models.User<Models.Preferences> | null>(null);
     const router = useRouter();
 
     const login = async (email: string, password: string) => {
@@ -34,7 +34,8 @@ const LoginPage = () => {
         setError(null);
         try {
             await account.createEmailPasswordSession(email, password);
-            setLoggedInUser(await account.get());
+            const user = await account.get();
+            setLoggedInUser(user);
             router.push(siteConfig.routes.dashboard);
         } catch (err) {
             setError("Login failed. Please check your credentials.");
