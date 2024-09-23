@@ -10,7 +10,9 @@ import { useRouter } from "next/navigation";
 import { account, ID } from "../appwrite";
 import { Models } from "appwrite";
 
-import { siteConfig } from "@/configinterface FormValues {
+import { siteConfig } from "@/config/site";
+
+interface FormValues {
     email: string;
     password: string;
     confirmPassword?: string;
@@ -83,7 +85,12 @@ const SignupPage = () => {
             await login(values.email, values.password);
         }
         setSubmitting(false);
-    as {loggedInUser.name}</p>
+    };
+
+    if (loggedInUser) {
+        return (
+            <div>
+                <p>Logged in as {loggedInUser.name}</p>
                 <button type="button" onClick={logout}>
                     Logout
                 </button>
