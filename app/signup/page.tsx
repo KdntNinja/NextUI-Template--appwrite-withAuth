@@ -16,14 +16,12 @@ interface FormValues {
     email: string;
     password: string;
     confirmPassword?: string;
-    name?: string;
 }
 
 const initialValues: FormValues = {
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
 };
 
 const SignupSchema = Yup.object().shape({
@@ -32,7 +30,6 @@ const SignupSchema = Yup.object().shape({
     confirmPassword: Yup.string()
         .oneOf([Yup.ref("password"), undefined], "Passwords must match")
         .required("Required"),
-    name: Yup.string().required("Required"),
 });
 
 const SignupPage = () => {
@@ -42,11 +39,11 @@ const SignupPage = () => {
     const [isSignup, setIsSignup] = useState(true);
     const router = useRouter();
 
-    const signup = async (email: string, password: string, name: string) => {
+    const signup = async (email: string, password: string) => {
         setLoading(true);
         setError(null);
         try {
-            await account.create(ID.unique(), email, password, name);
+            await account.create(ID.unique(), email, password);
             await login(email, password);
         } catch (err) {
             setError("Signup failed. Please try again.");
@@ -79,8 +76,8 @@ const SignupPage = () => {
         values: FormValues,
         { setSubmitting }: FormikHelpers<FormValues>
     ) => {
-        if (isSignup && values.name && values.confirmPassword) {
-            await signup(values.email, values.password, values.name);
+        if (isSignup && values.confirmPassword) {
+            await signup(values.email, values.password);
         } else {
             await login(values.email, values.password);
         }
@@ -129,15 +126,6 @@ const SignupPage = () => {
                         />
                         {isSignup && (
                             <>
-                                <Input
-                                    errorMessage={errors.name}
-                                    isInvalid={!!errors.name && touched.name}
-                                    label="Name"
-                                    type="text"
-                                    value={values.name}
-                                    variant="bordered"
-                                    onChange={handleChange("name")}
-                                />
                                 <Input
                                     errorMessage={errors.confirmPassword}
                                     isInvalid={!!errors.confirmPassword && touched.confirmPassword}
