@@ -110,17 +110,7 @@ const SignupPage = () => {
 							value={values.confirmPassword}
 							variant="bordered"
 							onChange={handleChange("confirmPassword")}
-						/>
-						<Input
-							errorMessage={errors.name}
-							isInvalid={!!errors.name && touched.name}
-							label="Name"
-							type="text"
-							value={values.name}
-							variant="bordered"
-							onChange={handleChange("name")}
-						/>
-						{error && <div className="text-red-500 text-sm">{error}</div>}
+						/>						{error && <div className="text-red-500 text-sm">{error}</div>}
 						<Button
 							color="primary"
 							isLoading={loading}
