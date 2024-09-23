@@ -5,6 +5,7 @@ import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
+import { useRouter } from "next/navigation";
 
 import { account, ID } from "../appwrite";
 
@@ -13,8 +14,8 @@ import { siteConfig } from "@/config/site";
 const initialValues: {
 	email: string;
 	password: string;
-	confirmPassword: string;
-	name: string;
+	confirmPassword?: string;
+	name?: string;
 } = {
 	email: "",
 	password: "",
@@ -31,9 +32,16 @@ const SignupSchema = Yup.object().shape({
 	name: Yup.string().required("Required"),
 });
 
+const LoginSchema = Yup.object().shape({
+	email: Yup.string().email("Invalid email").required("Required"),
+	password: Yup.string().required("Required"),
+});
+
 const SignupPage = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [loggedInUser, setLoggedInUser] = useState(null);
+	const router = useRouter();
 
 	const signup = async (email: string, password: string, name: string) => {
 		setLoading(true);
@@ -49,29 +57,46 @@ const SignupPage = () => {
 	};
 
 	const login = async (email: string, password: string) => {
-		await account.createEmailPasswordSession(email, password);
-		await account.get();
+		setLoading(true);
+		setError(null);
+		try {
+			await account.createEmailPasswordSession(email, password);
+			setLoggedInUser(await account.get());
+			router.push(siteConfig.routes.dashboard);
+		} catch (err) {
+			setError("Login failed. Please check your credentials.");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const logout = async () => {
+		await account.deleteSession("current");
+		setLoggedInUser(null);
 	};
 
 	const handleSubmit = async (
-		values: {
-			email: string;
-			password: string;
-			confirmPassword: string;
-			name: string;
-		},
-		{
-			setSubmitting,
-		}: FormikHelpers<{
-			email: string;
-			password: string;
-			confirmPassword: string;
-			name: string;
-		}>,
+		values: { email: string; password: string; confirmPassword?: string; name?: string },
+		{ setSubmitting }: FormikHelpers<{ email: string; password: string; confirmPassword?: string; name?: string }>
 	) => {
-		await signup(values.email, values.password, values.name);
+		if (values.name && values.confirmPassword) {
+			await signup(values.email, values.password, values.name);
+		} else {
+			await login(values.email, values.password);
+		}
 		setSubmitting(false);
 	};
+
+	if (loggedInUser) {
+		return (
+			<div>
+				<p>Logged in as {loggedInUser.name}</p>
+				<button type="button" onClick={logout}>
+					Logout
+				</button>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col items-center">
@@ -102,32 +127,57 @@ const SignupPage = () => {
 							variant="bordered"
 							onChange={handleChange("password")}
 						/>
-						<Input
-							errorMessage={errors.confirmPassword}
-							isInvalid={!!errors.confirmPassword && touched.confirmPassword}
-							label="Confirm Password"
-							type="password"
-							value={values.confirmPassword}
-							variant="bordered"
-							onChange={handleChange("confirmPassword")}
-						/>						{error && <div className="text-red-500 text-sm">{error}</div>}
+						{values.name !== undefined && (
+							<Input
+								errorMessage={errors.name}
+								isInvalid={!!errors.name && touched.name}
+								label="Name"
+								type="text"
+								value={values.name}
+								variant="bordered"
+								onChange={handleChange("name")}
+							/>
+						)}
+						{values.confirmPassword !== undefined && (
+							<Input
+								errorMessage={errors.confirmPassword}
+								isInvalid={!!errors.confirmPassword && touched.confirmPassword}
+								label="Confirm Password"
+								type="password"
+								value={values.confirmPassword}
+								variant="bordered"
+								onChange={handleChange("confirmPassword")}
+							/>
+						)}
+						{error && <div className="text-red-500 text-sm">{error}</div>}
 						<Button
 							color="primary"
 							isLoading={loading}
 							type="submit"
 							variant="flat"
 						>
-							Sign Up
+							{values.name ? "Sign Up" : "Login"}
 						</Button>
 					</form>
 				)}
 			</Formik>
 
 			<div className="font-light text-slate-400 mt-4 text-sm">
-				Already have an account?{" "}
-				<Link className="font-bold" href={siteConfig.routes.login}>
-					Login here
-				</Link>
+				{values.name ? (
+					<>
+						Already have an account?{" "}
+						<Link className="font-bold" href={siteConfig.routes.login}>
+							Login here
+						</Link>
+					</>
+				) : (
+					<>
+						Don&apos;t have an account?{" "}
+						<Link className="font-bold" href={siteConfig.routes.signup}>
+							Register here
+						</Link>
+					</>
+				)}
 			</div>
 		</div>
 	);
