@@ -4,6 +4,9 @@ const routes = {
 	login: "/login",
 	signup: "/signup",
 	dashboard: "/dashboard",
+	newRepo: "/new-repo",
+	profile: "/profile",
+	settings: "/settings",
 };
 
 export const siteConfig = {
