@@ -4,17 +4,15 @@ import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
 import { useRouter } from "next/navigation";
+
 import { account } from "@/app/appwrite";
 import { siteConfig } from "@/config/site";
-import { useAuthCheck } from "@/hooks/useAuthCheck";
 
 const Login = () => {
 	const loginForm = useRef<HTMLFormElement>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
-
-	useAuthCheck();
 
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -24,6 +22,18 @@ const Login = () => {
 		if (loginForm.current) {
 			const email = loginForm.current.email.value;
 			const password1 = loginForm.current.password1.value;
+
+			try {
+				// Check if a session already exists
+				const session = await account.getSession("current");
+				if (session) {
+					console.log("User is already logged in:", session);
+					router.push(siteConfig.routes.dashboard);
+					return;
+				}
+			} catch (error) {
+				// No active session, proceed to create a new one
+			}
 
 			try {
 				const response = await account.createSession(email, password1);

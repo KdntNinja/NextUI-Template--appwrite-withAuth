@@ -3,13 +3,19 @@ import React, { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Link } from "@nextui-org/link";
-import { Formik } from "formik";
+import { ID } from "appwrite";
+import { Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { account } from "@/app/appwrite";
 import { siteConfig } from "@/config/site";
-import { ID } from "appwrite";
-import { useAuthCheck } from "@/hooks/useAuthCheck";
+
+const initialValues = {
+	name: "",
+	email: "",
+	password: "",
+	confirmPassword: "",
+};
 
 const SignupSchema = Yup.object().shape({
 	name: Yup.string().required("Required"),
@@ -25,9 +31,10 @@ const SignupPage = () => {
 	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
 
-	useAuthCheck();
-
-	const handleRegistration = async (values: any, { setSubmitting }: any) => {
+	const handleRegistration = async (
+		values: typeof initialValues,
+		{ setSubmitting }: FormikHelpers<typeof initialValues>,
+	) => {
 		setLoading(true);
 		setError(null);
 
@@ -41,9 +48,9 @@ const SignupPage = () => {
 			console.log("Registration successful:", response);
 			await login(values.email, values.password);
 			router.push(siteConfig.routes.dashboard);
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Registration failed:", error);
-			setError("Signup failed. Please try again.");
+			setError(error.message || "Signup failed. Please try again.");
 		} finally {
 			setLoading(false);
 			setSubmitting(false);
@@ -60,12 +67,7 @@ const SignupPage = () => {
 			<h1 className="text-center text-[25px] font-bold mb-6">Sign Up</h1>
 
 			<Formik
-				initialValues={{
-					name: "",
-					email: "",
-					password: "",
-					confirmPassword: "",
-				}}
+				initialValues={initialValues}
 				validationSchema={SignupSchema}
 				onSubmit={handleRegistration}
 			>
