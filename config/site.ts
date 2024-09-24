@@ -1,13 +1,13 @@
 const routes = {
-  home: "/",
-  about: "/about",
-  login: "/login",
-  signup: "/signup",
-  verify: "/verify",
-  dashboard: "/dashboard",
-  newRepo: "/new-repo",
-  profile: "/profile",
-  settings: "/settings",
+	home: "/",
+	about: "/about",
+	login: "/login",
+	signup: "/signup",
+	verify: "/verify",
+	dashboard: "/dashboard",
+	newRepo: "/new-repo",
+	profile: "/profile",
+	settings: "/settings",
 };
 
 export const siteConfig = {
