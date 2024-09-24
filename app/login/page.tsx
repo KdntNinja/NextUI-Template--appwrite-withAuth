@@ -32,7 +32,7 @@ const Login = () => {
 					return;
 				}
 			} catch (error) {
-				// No active session, proceed to create a new one
+				console.log("No active session found:", error);
 			}
 
 			try {

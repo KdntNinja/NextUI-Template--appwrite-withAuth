@@ -46,11 +46,22 @@ const SignupPage = () => {
 				values.name,
 			);
 			console.log("Registration successful:", response);
-			await login(values.email, values.password);
-			router.push(siteConfig.routes.dashboard);
+
+			await account.createVerification(
+				`${siteConfig.prodDomain}${siteConfig.routes.verify}`,
+			);
+
+			router.push(siteConfig.routes.verify);
 		} catch (error: any) {
 			console.error("Registration failed:", error);
-			setError(error.message || "Signup failed. Please try again.");
+
+			if (error.response) {
+				setError(`Signup failed: ${error.response.data.message}`);
+			} else if (error.request) {
+				setError("Signup failed: No response from server. Please try again.");
+			} else {
+				setError(`Signup failed: ${error.message}`);
+			}
 		} finally {
 			setLoading(false);
 			setSubmitting(false);

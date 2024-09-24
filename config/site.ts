@@ -3,6 +3,7 @@ const routes = {
 	about: "/about",
 	login: "/login",
 	signup: "/signup",
+	verify: "/verify",
 	dashboard: "/dashboard",
 	newRepo: "/new-repo",
 	profile: "/profile",
@@ -11,6 +12,7 @@ const routes = {
 
 export const siteConfig = {
 	name: "Versionary",
+	prodDomain: "https://kdnsite.xyz",
 	title_p1: "The new",
 	title_p2: "Git project",
 	title_p3: "management site.",
