@@ -23,6 +23,20 @@ const Login = () => {
 			const email = loginForm.current.email.value;
 			const password1 = loginForm.current.password1.value;
 
+			// Validate email and password
+			const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+			if (!emailRegex.test(email)) {
+				setError("Invalid email format.");
+				setLoading(false);
+				return;
+			}
+
+			if (password1.length < 8) {
+				setError("Password must be at least 8 characters long.");
+				setLoading(false);
+				return;
+			}
+
 			try {
 				// Check if a session already exists
 				const session = await account.getSession("current");
@@ -32,7 +46,7 @@ const Login = () => {
 					return;
 				}
 			} catch (error) {
-				console.log("No active session found:", error);
+				// No active session, proceed to create a new one
 			}
 
 			try {

@@ -47,11 +47,16 @@ const SignupPage = () => {
 			);
 			console.log("Registration successful:", response);
 
-			await account.createVerification(
+			// Log in the user to create a valid session
+			await login(values.email, values.password);
+
+			// Send verification email
+			const verificationResponse = await account.createVerification(
 				`${siteConfig.prodDomain}${siteConfig.routes.verify}`,
 			);
+			console.log("Verification email sent:", verificationResponse);
 
-			router.push(siteConfig.routes.verify);
+			router.push(siteConfig.routes.dashboard);
 		} catch (error: any) {
 			console.error("Registration failed:", error);
 
