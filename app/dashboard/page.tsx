@@ -1,24 +1,15 @@
 "use client";
 
-import React, { useEffect, useCallback, useReducer } from "react";
 import { account, databases, client } from "@/app/appwrite";
-import {
-	Button,
-	Card,
-	CardBody,
-	Spacer,
-	Spinner,
-	Textarea,
-} from "@nextui-org/react";
+import { Button, Card, CardBody, Spinner } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { Query, Storage } from "appwrite";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-
-const FileUpload = dynamic(() => import("./repo/[repoId]/FileUpload"), {
-	ssr: false,
-});
+import { FaTrash, FaExternalLinkAlt } from "react-icons/fa";
+import Typography from "@/components/Typography";
+import React, { useReducer, useCallback, useEffect } from "react";
+import { Box } from "@mui/material";
 
 interface State {
 	user: any | null;
@@ -71,9 +62,7 @@ const Dashboard: React.FC = () => {
 				type: "SET_ERROR",
 				payload: "Failed to fetch user data. Redirecting to login.",
 			});
-			setTimeout(() => {
-				router.push(siteConfig.routes.login);
-			}, 2000);
+			setTimeout(() => router.push(siteConfig.routes.login), 2000);
 		}
 	}, [router]);
 
@@ -104,15 +93,16 @@ const Dashboard: React.FC = () => {
 					Query.equal("repoId", repoId),
 				]);
 
-				for (const file of filesResponse.files) {
-					await storage.deleteFile(bucketId, file.$id);
-				}
+				await Promise.all(
+					filesResponse.files.map((file) =>
+						storage.deleteFile(bucketId, file.$id),
+					),
+				);
 
 				await databases.deleteDocument(databaseId, collectionId, repoId);
-
 				dispatch({
 					type: "SET_REPOSITORIES",
-					payload: repositories.filter((repo: any) => repo.$id !== repoId),
+					payload: repositories.filter((repo) => repo.$id !== repoId),
 				});
 
 				router.push(`${siteConfig.routes.dashboard}/delete-repo`);
@@ -136,69 +126,126 @@ const Dashboard: React.FC = () => {
 			<Card>
 				<CardBody className="text-center">
 					<Spinner size="lg" />
-					<Textarea readOnly value="Loading user data..." />
+					<Typography>Loading user data...</Typography>
 				</CardBody>
 			</Card>
 		);
 	}
 
 	return (
-		<Card>
-			<CardBody className="text-center">
-				<h1>Dashboard</h1>
-				{error ? (
-					<p className="error">{error}</p>
-				) : user ? (
-					<>
-						<h2>Welcome, {user?.name || "User"}!</h2>
+		<div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
+			<Card>
+				<CardBody>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginBottom: "20px",
+						}}
+					>
+						<Typography h1>Dashboard</Typography>
+						<div>
+							<Typography h2>Welcome, {user?.name || "User"}!</Typography>
+						</div>
 						<Button
 							onClick={() =>
 								router.push(`${siteConfig.routes.dashboard}/create-repo`)
 							}
 							color="primary"
+							size="sm"
 						>
 							Create Repository
 						</Button>
-						<Spacer y={2} />
-						<h3>Your Repositories</h3>
-						{repositories.length > 0 ? (
-							<ul className="repo-list">
-								{repositories.map((repo: any) => (
-									<li key={repo.$id} className="repo-item">
-										<Link href={`${siteConfig.routes.repo}/${repo.$id}`}>
-											<span className="repo-link">{repo.name}</span>
-										</Link>
-										<Button
-											color="danger"
-											onClick={() => deleteRepository(repo.$id)}
+					</div>
+					{error ? (
+						<p>{error}</p>
+					) : user ? (
+						<>
+							<Typography>Your Repositories</Typography>
+							{repositories.length > 0 ? (
+								<Box
+									display="flex"
+									flexWrap="wrap"
+									justifyContent="space-between"
+								>
+									{repositories.map((repo) => (
+										<Box
+											key={repo.$id}
+											width="calc(50% - 10px)"
+											marginBottom="15px"
 										>
-											Delete
-										</Button>
-										<Button
-											color="primary"
-											onClick={() =>
-												router.push(`${siteConfig.routes.repo}/${repo.$id}`)
-											}
-										>
-											Go to page
-										</Button>
-										<FileUpload
-											userId={user.$id}
-											repoName={repo.name}
-											repoId={repo.$id}
-										/>
-									</li>
-								))}
-							</ul>
-						) : (
-							<p>No repositories found.</p>
-						)}
-					</>
-				) : (
-					<p>User not found.</p>
-				)}
-			</CardBody>
-		</Card>
+											<Card
+												isHoverable
+												style={{
+													padding: "10px",
+													borderRadius: "10px",
+													backgroundColor: "#00796b", // Darker color for the card
+													color: "#ffffff", // Optional: change text color for contrast
+													boxShadow: "0 4px 8px rgba(0,0,0,0.2)", // Optional shadow for depth
+												}}
+											>
+												<CardBody>
+													<div
+														style={{
+															display: "flex",
+															justifyContent: "space-between",
+															alignItems: "center",
+														}}
+													>
+														<Link
+															href={`${siteConfig.routes.repo}/${repo.$id}`}
+														>
+															<Typography
+																style={{
+																	fontWeight: "500",
+																	textDecoration: "none",
+																}}
+															>
+																{repo.name}
+															</Typography>
+														</Link>
+														<div>
+															<Button
+																onClick={() => deleteRepository(repo.$id)}
+																color="danger"
+																size="sm" // Make the button smaller
+																style={{ marginRight: "5px" }}
+															>
+																<FaTrash style={{ marginRight: "5px" }} />
+																Delete
+															</Button>
+															<Button
+																onClick={() =>
+																	router.push(
+																		`${siteConfig.routes.repo}/${repo.$id}`,
+																	)
+																}
+																color="primary"
+																size="sm"
+															>
+																<FaExternalLinkAlt
+																	style={{ marginRight: "5px" }}
+																/>
+																Go to page
+															</Button>
+														</div>
+													</div>
+												</CardBody>
+											</Card>
+										</Box>
+									))}
+								</Box>
+							) : (
+								<Typography>No repositories found.</Typography>
+							)}
+						</>
+					) : (
+						<Typography>User not found.</Typography>
+					)}
+				</CardBody>
+			</Card>
+		</div>
 	);
 };
 

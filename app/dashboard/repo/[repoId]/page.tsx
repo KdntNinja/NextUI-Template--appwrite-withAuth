@@ -3,14 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Databases, Storage } from "appwrite";
-import { client, account } from "@/app/appwrite";
-import FileUpload from "./FileUpload"; // Adjust path if necessary
+import { client } from "@/app/appwrite";
+import FileUpload from "./FileUpload";
 
 const RepoPage = ({ params }: { params: { repoId: string } }) => {
 	const { repoId } = params;
 	const [repoData, setRepoData] = useState<any>(null);
 	const [loading, setLoading] = useState(true);
-	const [files, setFiles] = useState<any[]>([]); // Adjust type as needed
 	const router = useRouter();
 
 	useEffect(() => {
@@ -26,12 +25,6 @@ const RepoPage = ({ params }: { params: { repoId: string } }) => {
 					repoId,
 				);
 				setRepoData(document);
-
-				// Fetch files from the storage bucket
-				const storage = new Storage(client);
-				const bucketId = process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID as string;
-				const filesList = await storage.listFiles(bucketId); // Adjust based on your storage configuration
-				setFiles(filesList.files); // Adjust as necessary based on the response
 			} catch (error) {
 				console.error("Error fetching repo data:", error);
 				router.push("/dashboard");
@@ -40,7 +33,7 @@ const RepoPage = ({ params }: { params: { repoId: string } }) => {
 			}
 		};
 
-		fetchRepoData();
+		fetchRepoData().catch(console.error);
 	}, [repoId, router]);
 
 	if (loading) return <div>Loading...</div>;
@@ -48,13 +41,11 @@ const RepoPage = ({ params }: { params: { repoId: string } }) => {
 	return (
 		<div>
 			<h1>Repository: {repoData?.name}</h1>
-			<FileUpload repoId={repoId} />
-			<h2>Uploaded Files</h2>
-			<ul>
-				{files.map((file) => (
-					<li key={file.$id}>{file.name}</li>
-				))}
-			</ul>
+			<FileUpload
+				repoId={repoId}
+				userId={repoData?.userId}
+				repoName={repoData?.name}
+			/>
 		</div>
 	);
 };

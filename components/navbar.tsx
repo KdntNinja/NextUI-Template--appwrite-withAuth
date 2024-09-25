@@ -40,49 +40,6 @@ export const Navbar = () => {
 						<p className="font-bold text-inherit">{siteConfig.name}</p>
 					</NextLink>
 				</NavbarBrand>
-				<ul
-					className={`hidden lg:flex gap-4 ${isAuthenticated ? "justify-center" : "justify-start"} ml-2`}
-				>
-					{isAuthenticated ? (
-						<>
-							<NavbarItem className="p-2">
-								<Button
-									as={NextLink}
-									href={siteConfig.routes.dashboard}
-									color="primary"
-								>
-									Create New Repository
-								</Button>
-							</NavbarItem>
-							<NavbarItem className="p-2">
-								<Button
-									as={NextLink}
-									href={siteConfig.routes.profile}
-									color="primary"
-								>
-									View Profile
-								</Button>
-							</NavbarItem>
-							<NavbarItem className="p-2">
-								<Button
-									as={NextLink}
-									href={siteConfig.routes.settings}
-									color="primary"
-								>
-									Settings
-								</Button>
-							</NavbarItem>
-						</>
-					) : (
-						siteConfig.navItems.map((item) => (
-							<NavbarItem key={item.href} className="p-2">
-								<Button as={NextLink} href={item.href}>
-									{item.label}
-								</Button>
-							</NavbarItem>
-						))
-					)}
-				</ul>
 			</NavbarContent>
 		</NextUINavbar>
 	);

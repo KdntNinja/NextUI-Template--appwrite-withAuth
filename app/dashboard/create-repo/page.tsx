@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
+import { Input } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { Databases } from "appwrite";
 import { client, account } from "@/app/appwrite";
+import { Card, CardBody, Spinner } from "@nextui-org/react";
+import Typography from "@/components/Typography";
 
 const CreateRepo = () => {
 	const [repoName, setRepoName] = useState("");
@@ -71,20 +73,28 @@ const CreateRepo = () => {
 	};
 
 	return (
-		<div>
-			<h2>Create Repository</h2>
-			<form onSubmit={handleSubmit}>
-				<Input
-					label="Repository Name"
-					value={repoName}
-					onChange={(e) => setRepoName(e.target.value)}
-					required
-				/>
-				{error && <div className="text-red-500">{error}</div>}
-				<Button isLoading={loading} type="submit">
-					Create Repository
-				</Button>
-			</form>
+		<div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
+			<Card>
+				<CardBody>
+					<Typography h2>Create Repository</Typography>
+					<form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
+						<Input
+							label="Repository Name"
+							value={repoName}
+							onChange={(e) => setRepoName(e.target.value)}
+							required
+							style={{ marginBottom: "15px" }} // Add margin for spacing
+						/>
+						{error && (
+							<div style={{ color: "red", marginBottom: "15px" }}>{error}</div>
+						)}
+						<Button isLoading={loading} type="submit" color="primary" fullWidth>
+							{loading ? <Spinner size="sm" /> : "Create Repository"}{" "}
+							{/* Show spinner during loading */}
+						</Button>
+					</form>
+				</CardBody>
+			</Card>
 		</div>
 	);
 };

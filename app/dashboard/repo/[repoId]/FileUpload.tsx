@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "@nextui-org/button";
+import { Button, Card, CardBody } from "@nextui-org/react";
 import { Storage } from "appwrite";
+import Typography from "@/components/Typography";
 import { client } from "@/app/appwrite";
 
 interface FileUploadProps {
 	userId: string;
 	repoName: string;
-	repoId: string; // Add this line
+	repoId: string;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -44,7 +45,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					);
 				}
 
-				const uniqueFileId = `${userId}-${repoName}-${Date.now()}`.slice(0, 36);
+				const uniqueFileId =
+					`${repoId}/${userId}-${repoName}-${Date.now()}`.slice(0, 36);
 
 				await storage.createFile(
 					process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID as string,
@@ -65,13 +67,28 @@ const FileUpload: React.FC<FileUploadProps> = ({
 	};
 
 	return (
-		<div>
-			<input type="file" multiple onChange={handleFileChange} />
-			{error && <div className="text-red-500">{error}</div>}
-			<Button isLoading={loading} onClick={handleUpload}>
-				Upload Files
-			</Button>
-		</div>
+		<Card style={{ margin: "20px 0", padding: "20px" }}>
+			<CardBody>
+				<Typography>Upload Files to {repoName}</Typography>
+				<input
+					type="file"
+					multiple
+					onChange={handleFileChange}
+					style={{ margin: "10px 0" }} // Added margin for spacing
+				/>
+				{error && (
+					<div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
+				)}
+				<Button
+					isLoading={loading}
+					onClick={handleUpload}
+					color="primary"
+					fullWidth
+				>
+					Upload Files
+				</Button>
+			</CardBody>
+		</Card>
 	);
 };
 
