@@ -74,7 +74,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
 					type="file"
 					multiple
 					onChange={handleFileChange}
-					style={{ margin: "10px 0" }} // Added margin for spacing
+					style={{ margin: "10px 0" }}
 				/>
 				{error && (
 					<div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
