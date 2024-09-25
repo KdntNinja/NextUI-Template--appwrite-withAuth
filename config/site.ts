@@ -5,7 +5,7 @@ const routes = {
 	signup: "/signup",
 	verify: "/verify",
 	dashboard: "/dashboard",
-	newRepo: "/new-repo",
+	newRepo: "/api/create-repo",
 	profile: "/profile",
 	settings: "/settings",
 };
