@@ -16,7 +16,7 @@ const Typography: React.FC<TypographyProps> = ({
 	color,
 	style,
 }) => {
-	let Tag = "p";
+	let Tag: keyof JSX.IntrinsicElements = "p";
 	if (h1) Tag = "h1";
 	if (h2) Tag = "h2";
 
