@@ -18,7 +18,6 @@ interface Repository {
 
 const Dashboard = () => {
 	const [user, setUser] = useState<User | null>(null);
-	const [repositories, setRepositories] = useState<Repository[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const router = useRouter();
 
@@ -35,7 +34,6 @@ const Dashboard = () => {
 						setIsModalOpen(true);
 					}
 					// Fetch repositories or other user-related data here
-					// setRepositories(fetchedRepositories);
 				}
 			} catch (error) {
 				console.error("Failed to fetch user data:", error);
@@ -48,6 +46,16 @@ const Dashboard = () => {
 
 	if (!user) {
 		return <div>Loading...</div>;
+	}
+
+	if (!user.emailVerification) {
+		return (
+			<div className="min-h-screen text-white flex flex-col items-center justify-center">
+				<h1 className="text-3xl font-bold mb-4">
+					Please verify your account to access the dashboard.
+				</h1>
+			</div>
+		);
 	}
 
 	return (
@@ -64,17 +72,7 @@ const Dashboard = () => {
 							Your Repositories
 						</CardHeader>
 						<CardBody className="p-4">
-							{repositories.length > 0 ? (
-								<ul>
-									{repositories.map((repo) => (
-										<li key={repo.id} className="border-b border-gray-700 py-2">
-											{repo.name}
-										</li>
-									))}
-								</ul>
-							) : (
-								<p>You have no repositories yet.</p>
-							)}
+							{/* Repositories display logic can be added here */}
 						</CardBody>
 					</Card>
 				</div>
